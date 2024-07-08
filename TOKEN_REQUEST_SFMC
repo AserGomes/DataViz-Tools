@@ -1,0 +1,25 @@
+//TOKEN
+let
+//IDENTIFICATION
+clientId = "XXXXXX",
+clientSecret = "XXXXXXXXX" ,
+AuthBaseUrl = "https://mcb-XXXXXXXXXXX.auth.marketingcloudapis.com/", 
+
+//GET TOKEN
+    body = Text.FromBinary(Json.FromValue([grant_type = "client_credentials", client_id = clientId, client_secret = clientSecret])),
+            
+    Parsed_JSON = Json.Document(body),
+            
+    Request = Json.Document(Web.Contents(
+        AuthBaseUrl,
+        [
+            RelativePath = "/v2/token",
+            Headers = [#"Content-Type"="application/json"],
+            Content = Json.FromValue(Parsed_JSON)
+        ]
+    )),
+    toRecord = {Request[access_token]},
+    toText = Text.From(toRecord{0})
+
+in
+    toText
