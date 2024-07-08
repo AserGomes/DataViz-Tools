@@ -1,0 +1,32 @@
+//BASE
+let
+    //DADOS
+    externalId = "XXXXXXXX" ,  
+    urlx = "https://mcb-XXXXXX.rest.marketingcloudapis.com/" ,   
+    page = 1,
+    pageSize = 2500,
+
+    //Requisição API
+    get_request = (page) =>
+        let
+            //REST API URL + PATH + EXTERNAL ID + PAGE + PAGENUMBER             
+            Url = urlx & "data/v1/customobjectdata/key/" & externalId & "/rowset?$page=" & Text.From(page) ,
+            RegistrosPorPagina = 2500,
+            
+            request = Json.Document(Web.Contents(Url,[
+            Headers = [Authorization="Bearer "& Token]
+            ]))
+        in
+            request,
+            
+    //Total de Páginas
+    requestx = get_request(page),
+    totalOfPages = Number.RoundUp(requestx[count] / pageSize),
+
+    //Paginação
+    listOfPages = List.Generate(
+        () => [page = 1, data = get_request(page)],
+        each [page] <= totalOfPages,
+        each [page = [page] + 1, data = get_request(page)])
+in
+    listOfPages // RETORNA A LISTA DE PÁGINA PARA EXPANDIR
